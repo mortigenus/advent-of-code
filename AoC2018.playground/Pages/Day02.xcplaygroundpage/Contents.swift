@@ -14,26 +14,26 @@ let ids = input
     .trimmingCharacters(in: .whitespacesAndNewlines)
     .components(separatedBy: .whitespacesAndNewlines)
 
-func countLetters(_ s:String) -> [Character:Int] {
-    var dict = [Character:Int]()
-    s.forEach { c in
-        dict[c] = (dict[c] ?? 0) + 1
+func countLetters(_ s:String) -> NSCountedSet {
+    return s.reduce(into: NSCountedSet()) { acc, c in
+        acc.add(c)
     }
-    return dict
 }
 
 func solve(_ s:String) -> (Bool, Bool) {
-    let dict = countLetters(s)
-    let twice = dict.firstIndex(where: {(_,v) in v == 2}) != nil
-    let thrice = dict.firstIndex(where: {(_,v) in v == 3}) != nil
+    let counted = countLetters(s)
+
+    let twice = counted.contains(where: { counted.count(for: $0) == 2 })
+    let thrice = counted.contains(where: { counted.count(for: $0) == 3 })
     return (twice, thrice)
 }
 
 let b2i: (Bool) -> Int = { $0 ? 1 : 0 }
 
-let (twice, thrice) = ids.reduce((0,0), { (res, id) in
+let (twice, thrice) = ids.reduce(into: (0,0), { (res, id) in
     let (twice, thrice) = solve(id)
-    return (res.0 + b2i(twice), res.1 + b2i(thrice))
+    res.0 += b2i(twice)
+    res.1 += b2i(thrice)
 })
 
 let part1 = twice * thrice
@@ -41,17 +41,18 @@ let part1 = twice * thrice
 // ------- Part 2 -------
 
 func distance(_ s1: String, _ s2: String) -> Int {
-    //strings are the same length2
-    return s1.indices.reduce(0, { (res, i) in
-        return res + b2i(s1[i] != s2[i])
+    //strings are the same length
+    return s1.indices.reduce(into: 0, { (res, i) in
+        res += b2i(s1[i] != s2[i])
     })
 }
 
 func commonPart(_ s1: String, _ s2: String) -> String {
     var resultString = s1
-    if let index = s1.indices.first(where: { i in s1[i] != s2[i] }) {
-        resultString.remove(at: index)
-    }
+    s1.indices.first(where: { s1[$0] != s2[$0] })
+        .flatMap { index in
+            resultString.remove(at: index)
+        }
     return resultString
 }
 

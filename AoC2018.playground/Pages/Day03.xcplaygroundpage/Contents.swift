@@ -2,14 +2,6 @@
 
 import UIKit
 
-precedencegroup LeftAssoc {
-    associativity: left
-}
-infix operator >>-: LeftAssoc
-func >>-<T, U>(a: T?, f: (T) -> U?) -> U? {
-    return a.flatMap(f)
-}
-
 struct Point: Hashable {
     let x: Int
     let y: Int
