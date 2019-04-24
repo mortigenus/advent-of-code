@@ -4,8 +4,12 @@ import Foundation
 
 struct LogRecord {
     let id: Int
-    let sumMinutesSlept: Int
-    let ranges: [Range<Int>]
+    var sumMinutesSlept: Int = 0
+    var ranges: [Range<Int>] = []
+
+    init(id: Int) {
+        self.id = id
+    }
 }
 
 guard let path = Bundle.main.path(forResource: "input", ofType: "txt") else {
@@ -19,112 +23,118 @@ let log: [String] = input
     .components(separatedBy: .newlines)
     .sorted()
 
-
-var parsedLog: [LogRecord] = []
-var currentId: Int = 0
-var currentFellAsleepTime: Int = 0
-var currentWokeUpTime: Int = 0
-var currentSleepSum: Int = 0
-var currentSleepRanges: [Range<Int>] = []
-log.forEach { record in
-    let start = record.index(record.startIndex, offsetBy: 15)
-    let end = record.index(record.startIndex, offsetBy: 17)
-    let range = start..<end
-
+var parsedLog = [LogRecord]()
+var currentRecord: LogRecord?
+var currentFellAsleepTime: Int?
+ log.forEach { record in
     if (record.contains("Guard")) {
-        //save previous guard
-        if currentId != 0 {
-            let newRecord = LogRecord(
-                id: currentId,
-                sumMinutesSlept: currentSleepSum,
-                ranges: currentSleepRanges
-            )
-            parsedLog.append(newRecord)
-            currentId = 0
-            currentSleepSum = 0
-            currentSleepRanges = []
-            currentFellAsleepTime = 0
-            currentWokeUpTime = 0
+        if let currentRecord = currentRecord {
+            parsedLog.append(currentRecord)
         }
 
-        let idIndex = record.index(record.firstIndex(of: "#")!, offsetBy:1)
-        let scanner = Scanner(string: String(record[idIndex...]))
-        scanner.scanInt(&currentId)
-    } else if (record.contains("falls")) {
-        currentFellAsleepTime = Int(String(record[range]))!
-    } else if (record.contains("wakes")) {
-        currentWokeUpTime = Int(String(record[range]))!
-
-        currentSleepRanges.append(currentFellAsleepTime..<currentWokeUpTime)
-        currentSleepSum += (currentWokeUpTime - currentFellAsleepTime)
-        currentFellAsleepTime = 0
+        currentRecord = record.firstIndex(of: "#")
+            .flatMap { index in
+                record.index(after: index)
+            }
+            .flatMap { idIndex in
+                Scanner(string: String(record[idIndex...]))
+            }
+            .flatMap { scanner in
+                var id: Int = 0
+                scanner.scanInt(&id)
+                return id
+            }
+            .flatMap {
+                LogRecord(id: $0)
+            }
     } else {
-        fatalError("Wrong Input Format")
+        let minutesStart = record.index(record.startIndex, offsetBy: 15)
+        let minutesEnd = record.index(record.startIndex, offsetBy: 17)
+        let minutesRange = minutesStart..<minutesEnd
+
+
+        if (record.contains("falls")) {
+            currentFellAsleepTime = Int(String(record[minutesRange]))
+        } else if (record.contains("wakes")) {
+            Int(String(record[minutesRange]))
+                .flatMap { wokeUpTime -> (Int, Range<Int>) in
+                    if let fellAsleepTime = currentFellAsleepTime {
+                        return (
+                            wokeUpTime - fellAsleepTime,
+                            fellAsleepTime..<wokeUpTime
+                        )
+                    } else {
+                        fatalError("Wrong Input Format")
+                    }
+                }
+                .flatMap { (sum, range) in
+                    currentRecord?.sumMinutesSlept += sum
+                    currentRecord?.ranges.append(range)
+                }
+        } else {
+            fatalError("Wrong Input Format")
+        }
     }
 }
-//save the last guard
-let newRecord = LogRecord(
-    id: currentId,
-    sumMinutesSlept: currentSleepSum,
-    ranges: currentSleepRanges
-)
-parsedLog.append(newRecord)
+//append the last guard
+currentRecord.flatMap { parsedLog.append($0) }
 
-let map = parsedLog.reduce(into: ([:] as [Int:(Int,NSCountedSet)]), { acc, val in
+struct AccumulatedLog: Hashable {
+    var sumMinutesSlept = 0
+    var countedMinutes = NSCountedSet()
+}
+
+let map = parsedLog.reduce(into: [Int:AccumulatedLog]()) { acc, val in
     if acc[val.id] == nil {
-        acc[val.id] = (0, NSCountedSet())
+        acc[val.id] = AccumulatedLog()
     }
-    acc[val.id]?.0 += val.sumMinutesSlept
+    acc[val.id]!.sumMinutesSlept += val.sumMinutesSlept
     val.ranges.flatMap { range in
         range.map {
-            acc[val.id]?.1.add($0)
+            acc[val.id]!.countedMinutes.add($0)
         }
-    }
-})
-
-var currentMaxId: Int?
-map.forEach {
-    if let id = currentMaxId {
-        if map[id]!.0 < $0.value.0 {
-            currentMaxId = $0.key
-        }
-    } else {
-        currentMaxId = $0.key
     }
 }
 
-var bestCount: Int = 0
-var bestMinute: Int?
-let set = map[currentMaxId!]!.1
-set.forEach {
-    if set.count(for: $0) > bestCount {
-        bestCount = set.count(for: $0)
-        bestMinute = $0 as? Int
+// who slept the most? -> at what minute they slept the most? ->
+// -> multiply id and minute
+let part1 = map
+    .max(by: { $0.value.sumMinutesSlept < $1.value.sumMinutesSlept })
+    .flatMap { kv_pair -> (Int, Int) in
+        let (id, log) = kv_pair
+        return (
+            id,
+            log.countedMinutes.max(by: {
+                log.countedMinutes.count(for: $0) < log.countedMinutes.count(for: $1)
+            }) as! Int
+        )
     }
-}
+    .flatMap {
+        $0.0 * $0.1
+    }
 
-let part1 = currentMaxId! * bestMinute!
 
-bestCount = 0
-bestMinute = nil
-currentMaxId = nil
+// who slept the most times on the same minute?
+var bestCount = 0
+var currentBestId: Int? = nil
+var bestMinute: Int? = nil
 map.forEach { (k, v) in
-    let set = v.1
+    let set = v.countedMinutes
     set.forEach { minute in
         if set.count(for: minute) > bestCount {
             bestCount = set.count(for: minute)
             bestMinute = minute as? Int
-            currentMaxId = k
+            currentBestId = k
         }
     }
 }
 
-let part2 = bestMinute! * currentMaxId!
-
+let part2 = bestMinute! * currentBestId!
 
 // ------- Test -------
 
 assert(part1 == 12169, "WA")
 assert(part2 == 16164, "WA")
+
 
 //: [Next](@next)
