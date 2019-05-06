@@ -12,14 +12,9 @@ struct LogRecord {
     }
 }
 
-guard let path = Bundle.main.path(forResource: "input", ofType: "txt") else {
-    fatalError("Put input for the task into \"input.txt\" file")
-}
+let input = try readInput()
 
-let input = try String(contentsOfFile:path)
-
-let log: [String] = input
-    .trimmingCharacters(in: .whitespacesAndNewlines)
+let log = input
     .components(separatedBy: .newlines)
     .sorted()
 
@@ -89,7 +84,7 @@ let map = parsedLog.reduce(into: [Int:AccumulatedLog]()) { acc, val in
         acc[val.id] = AccumulatedLog()
     }
     acc[val.id]!.sumMinutesSlept += val.sumMinutesSlept
-    val.ranges.flatMap { range in
+    _ = val.ranges.flatMap { range in
         range.map {
             acc[val.id]!.countedMinutes.add($0)
         }
@@ -112,7 +107,7 @@ let part1 = map
     .flatMap {
         $0.0 * $0.1
     }
-
+print(part1!)
 
 // who slept the most times on the same minute?
 var bestCount = 0
@@ -130,6 +125,7 @@ map.forEach { (k, v) in
 }
 
 let part2 = bestMinute! * currentBestId!
+print(part2)
 
 // ------- Test -------
 

@@ -58,14 +58,9 @@ extension Patch {
     }
 }
 
-guard let path = Bundle.main.path(forResource: "input", ofType: "txt") else {
-    fatalError("Put input for the task into \"input.txt\" file")
-}
-
-let input = try String(contentsOfFile:path)
+let input = try readInput()
 
 let patches = input
-    .trimmingCharacters(in: .whitespacesAndNewlines)
     .components(separatedBy: .newlines)
     .map({ Patch(patchDescription: $0) })
 
@@ -76,12 +71,14 @@ let setOfPoints = NSCountedSet(array: points)
 let part1 = setOfPoints.filter({
     setOfPoints.count(for: $0) > 1
 }).count
+print(part1)
 
 let part2 = patches.first(where: { patch in
     patch.points.allSatisfy{ point in
         setOfPoints.count(for: point) == 1
     }
-})?.id
+})!.id
+print(part2)
 
 // ------- Test -------
 

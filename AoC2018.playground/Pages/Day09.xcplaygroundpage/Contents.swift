@@ -54,10 +54,14 @@ func solve(players: Int, marbles: Int) -> Int {
 
         currentPlayer = (currentPlayer + 1) % players
     }
+
+    return points.max()!
 }
 
 let part1 = solve(players: players, marbles: marbles)
+print(part1)
 let part2 = solve(players: players, marbles: marbles * 100)
+print(part2)
 
 // ------- Test -------
 

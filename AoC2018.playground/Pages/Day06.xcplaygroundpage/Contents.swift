@@ -2,12 +2,7 @@
 
 import Foundation
 
-guard let path = Bundle.main.path(forResource: "input", ofType: "txt") else {
-    fatalError("Put input for the task into \"input.txt\" file")
-}
-
-let input = try String(contentsOfFile:path)
-    .trimmingCharacters(in: .whitespacesAndNewlines)
+let input = try readInput()
     .components(separatedBy: .newlines)
     .map { $0.components(separatedBy: ", ") }
     .map { $0.compactMap { Int($0) } }
@@ -15,11 +10,13 @@ let input = try String(contentsOfFile:path)
     .map { (id: $0.offset + 1, x: $0.element.first!, y: $0.element.last!) }
 
 let range = input
-    .reduce(into:(minX:Int.max, maxX:Int.min, minY:Int.max, maxY:Int.min)) { acc, point in
-        acc.minX = point.x < acc.minX ? point.x : acc.minX
-        acc.maxX = point.x > acc.maxX ? point.x : acc.maxX
-        acc.minY = point.y < acc.minY ? point.y : acc.minY
-        acc.maxY = point.y > acc.maxY ? point.y : acc.maxY
+    .reduce((minX:Int.max, maxX:Int.min, minY:Int.max, maxY:Int.min)) { acc, point in
+        return (
+            min(point.x, acc.minX),
+            max(point.x, acc.maxX),
+            min(point.y, acc.minY),
+            max(point.y, acc.maxY)
+        )
 }
 
 let generateGrid: ((minX: Int, maxX: Int, minY: Int, maxY: Int)) -> [(x: Int, y: Int)] = { range in
@@ -75,6 +72,7 @@ func solvePart1() -> Int {
 }
 
 let part1 = solvePart1()
+print(part1)
 
 func solvePart2() -> Int {
 
@@ -93,6 +91,7 @@ func solvePart2() -> Int {
 }
 
 let part2 = solvePart2()
+print(part2)
 
 // ------- Test -------
 

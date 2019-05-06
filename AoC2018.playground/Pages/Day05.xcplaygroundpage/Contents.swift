@@ -2,12 +2,7 @@
 
 import Foundation
 
-guard let path = Bundle.main.path(forResource: "input", ofType: "txt") else {
-    fatalError("Put input for the task into \"input.txt\" file")
-}
-
-let input = try String(contentsOfFile:path)
-    .trimmingCharacters(in: .whitespacesAndNewlines)
+let input = try readInput()
 
 let polymer = input
 //let polymer = input[input.startIndex...input.index(input.startIndex, offsetBy: 20)]
@@ -25,6 +20,7 @@ let result: [Character] = polymer.reduce(into: []) { acc, c in
     }
 }
 let part1 = result.count
+print(part1)
 
 var prepareMap = [Character: [Character]]()
 for char in "abcdefghijklmnopqrstuvwxyz" {
@@ -43,7 +39,8 @@ let map: [Character:[Character]] = polymer.reduce(into: prepareMap) { acc, c in
         }
     }
 }
-let part2 = map.min(by: { $0.value.count < $1.value.count })!.value.count
+let part2 = map.values.map({ $0.count }).min()
+print(part2!)
 
 // ------- Test -------
 

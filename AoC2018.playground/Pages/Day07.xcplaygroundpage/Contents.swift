@@ -2,12 +2,7 @@
 
 import Foundation
 
-guard let path = Bundle.main.path(forResource: "input", ofType: "txt") else {
-    fatalError("Put input for the task into \"input.txt\" file")
-}
-
-let input = try String(contentsOfFile:path)
-    .trimmingCharacters(in: .whitespacesAndNewlines)
+let input = try readInput()
     .components(separatedBy: .newlines)
     .map {
         return (
@@ -59,6 +54,7 @@ func solvePart1() -> String {
 }
 
 let part1 = solvePart1()
+print(part1)
 
 func solvePart2() -> Int {
 
@@ -115,6 +111,7 @@ func solvePart2() -> Int {
 }
 
 let part2 = solvePart2()
+print(part2)
 
 // ------- Test -------
 

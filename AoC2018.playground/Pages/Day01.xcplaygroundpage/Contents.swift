@@ -2,20 +2,16 @@
 
 import Foundation
 
-guard let path = Bundle.main.path(forResource: "input", ofType: "txt") else {
-    fatalError("Put input for the task into \"input.txt\" file")
-}
-
-let input = try String(contentsOfFile:path)
+let input = try readInput()
 
 let frequencies = input
-    .trimmingCharacters(in: .whitespacesAndNewlines)
     .components(separatedBy: .whitespacesAndNewlines)
     .compactMap({ Int($0) })
 
 // ------- Part 1 -------
 
 let part1 = frequencies.reduce(0, +)
+print(part1)
 
 // ------- Part 2 -------
 
@@ -29,6 +25,7 @@ while visited.insert(current).inserted {
 }
 
 let part2 = current
+print(part2)
 
 /*
  Originally my solution was to construct an infinite lazy sequence : D

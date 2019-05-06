@@ -2,16 +2,11 @@
 
 import Foundation
 
-guard let path = Bundle.main.path(forResource: "input", ofType: "txt") else {
-    fatalError("Put input for the task into \"input.txt\" file")
-}
-
-let input = try String(contentsOfFile:path)
+let input = try readInput()
 
 // ------- Part 1 -------
 
 let ids = input
-    .trimmingCharacters(in: .whitespacesAndNewlines)
     .components(separatedBy: .whitespacesAndNewlines)
 
 func countLetters(_ s:String) -> NSCountedSet {
@@ -37,6 +32,7 @@ let (twice, thrice) = ids.reduce(into: (0,0), { (res, id) in
 })
 
 let part1 = twice * thrice
+print(part1)
 
 // ------- Part 2 -------
 
@@ -49,7 +45,7 @@ func distance(_ s1: String, _ s2: String) -> Int {
 
 func commonPart(_ s1: String, _ s2: String) -> String {
     var resultString = s1
-    s1.indices.first(where: { s1[$0] != s2[$0] })
+    _ = s1.indices.first(where: { s1[$0] != s2[$0] })
         .flatMap { index in
             resultString.remove(at: index)
         }
@@ -77,6 +73,7 @@ func solve2(_ ids: [String]) -> String {
 }
 
 let part2 = solve2(ids)
+print(part2)
 
 // ------- Test -------
 

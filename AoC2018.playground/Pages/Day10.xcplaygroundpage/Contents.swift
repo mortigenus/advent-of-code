@@ -41,12 +41,7 @@ extension Point {
     }
 }
 
-guard let path = Bundle.main.path(forResource: "input", ofType: "txt") else {
-    fatalError("Put input for the task into \"input.txt\" file")
-}
-
-var input = try String(contentsOfFile:path)
-    .trimmingCharacters(in: .whitespacesAndNewlines)
+var input = try readInput()
     .components(separatedBy: .newlines)
     .map({ Point($0) })
 
@@ -92,6 +87,7 @@ func printGrid(_ xs: [Point]) {
 printGrid(input)
 
 let part2 = iterations
+print(part2)
 
 // ------- Test -------
 

@@ -2,12 +2,7 @@
 
 import Foundation
 
-guard let path = Bundle.main.path(forResource: "input", ofType: "txt") else {
-    fatalError("Put input for the task into \"input.txt\" file")
-}
-
-let input = try String(contentsOfFile:path)
-    .trimmingCharacters(in: .whitespacesAndNewlines)
+let input = try readInput()
     .components(separatedBy: .whitespaces)
     .compactMap({ Int($0) })
 
@@ -30,6 +25,7 @@ func countMetadata(_ tree: inout [Int]) -> Int {
 }
 
 let part1 = countMetadata(&tree)
+print(part1)
 
 struct Node {
     let children: [Node]?
@@ -60,7 +56,7 @@ func countMetadata(_ tree: Node) -> Int {
 
 tree = input
 let part2 = countMetadata(build(&tree)!)
-
+print(part2)
 
 // ------- Test -------
 
