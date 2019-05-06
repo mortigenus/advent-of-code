@@ -1,6 +1,6 @@
 //: [Previous](@previous)
 
-import UIKit
+import Foundation
 
 struct Point: Hashable {
     let x: Int
@@ -31,51 +31,28 @@ struct Patch {
 }
 
 extension Patch {
-    init?(patchDescription: String) {
-        let pattern = "#(?<id>[0-9]+) @ (?<x>[0-9]+),(?<y>[0-9]+): (?<width>[0-9]+)x(?<height>[0-9]+)"
-        let match = (try? NSRegularExpression(pattern: pattern))
-        >>- { regex in
-            regex.firstMatch(in: patchDescription,
-                             range: NSMakeRange(0, patchDescription.count))
+    init(patchDescription: String) {
+        let pattern = "#(?<id>\\d+) @ (?<x>\\d+),(?<y>\\d+): (?<width>\\d+)x(?<height>\\d+)"
+        let regex = try! NSRegularExpression(pattern: pattern)
+
+        let captureGroupToString = regex.captureGroupToString(in: patchDescription)
+        let captureGroupToInt = regex.captureGroupToInt(in: patchDescription)
+
+        guard let id = captureGroupToString("id") else {
+            fatalError("Wrong input format")
         }
-
-        let nameAndMatchToRange:
-            (String) -> (NSTextCheckingResult) -> Range<String.Index>? = { name in
-            return { match in
-                Range(match.range(withName: name), in: patchDescription)
-            }
+        guard let x = captureGroupToInt("x") else {
+            fatalError("Wrong input format")
         }
-        let rangeToString: (Range) -> String? = { String(patchDescription[$0]) }
-        let stringToInt: (String) -> Int? = { Int($0) }
-
-        guard let id = match
-            >>- nameAndMatchToRange("id")
-            >>- rangeToString
-            else { return nil }
-
-        guard let x = match
-            >>- nameAndMatchToRange("x")
-            >>- rangeToString
-            >>- stringToInt
-            else { return nil }
-
-        guard let y = match
-            >>- nameAndMatchToRange("y")
-            >>- rangeToString
-            >>- stringToInt
-            else { return nil }
-
-        guard let width = match
-            >>- nameAndMatchToRange("width")
-            >>- rangeToString
-            >>- stringToInt
-            else { return nil }
-
-        guard let height = match
-            >>- nameAndMatchToRange("height")
-            >>- rangeToString
-            >>- stringToInt
-            else { return nil }
+        guard let y = captureGroupToInt("y") else {
+            fatalError("Wrong input format")
+        }
+        guard let width = captureGroupToInt("width") else {
+            fatalError("Wrong input format")
+        }
+        guard let height = captureGroupToInt("height") else {
+            fatalError("Wrong input format")
+        }
 
         self.init(id: id, x: x, y: y, width: width, height: height)
     }
@@ -90,7 +67,7 @@ let input = try String(contentsOfFile:path)
 let patches = input
     .trimmingCharacters(in: .whitespacesAndNewlines)
     .components(separatedBy: .newlines)
-    .compactMap({ Patch(patchDescription: $0) })
+    .map({ Patch(patchDescription: $0) })
 
 let points = patches.flatMap({ $0.points })
 
