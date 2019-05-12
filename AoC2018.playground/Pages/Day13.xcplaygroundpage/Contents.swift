@@ -1,34 +1,6 @@
-//
-//  main.swift
-//  AoC
-//
-//  Created by Ivan Chalov on 05/05/2019.
-//  Copyright © 2019 Ivan Chalov. All rights reserved.
-//
+//: [Previous](@previous)
 
 import Foundation
-
-public func readInput(trimWhitespace: Bool = true) throws -> String {
-    let input: String
-    if CommandLine.arguments.count == 4 && CommandLine.arguments[2] == "cli" {
-        let currentDirectoryURL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
-        var url = URL(fileURLWithPath: CommandLine.arguments[3], relativeTo: currentDirectoryURL)
-        url.appendPathComponent("Resources/input.txt")
-
-        input = try String(contentsOf: url)
-    } else {
-        guard let path = Bundle.main.path(forResource: "input", ofType: "txt") else {
-            fatalError("Put input for the task into \"input.txt\" file")
-        }
-
-        input = try String(contentsOfFile:path)
-    }
-
-    return trimWhitespace
-        ? input.trimmingCharacters(in: .whitespacesAndNewlines)
-        : input
-}
-
 
 enum Track: String, Equatable {
     case straight = "|"
@@ -113,12 +85,12 @@ struct Cart {
     mutating func corner(with track: Track) {
         if Set([.up, .down]).contains(direction) {
             track == .curveLeft
-                    ? direction.ccw()
-                    : direction.cw()
+                ? direction.ccw()
+                : direction.cw()
         } else {
             track == .curveLeft
-                    ? direction.cw()
-                    : direction.ccw()
+                ? direction.cw()
+                : direction.ccw()
         }
     }
 
@@ -139,7 +111,7 @@ struct Cart {
         self.position = position
         self.direction = direction
     }
-    
+
 }
 
 func print(map: [[Track]], carts: [Cart]) {
@@ -235,3 +207,9 @@ let lastCart = carts.first!.value
 let part2 = "\(lastCart.position.x),\(lastCart.position.y)"
 print(part2)
 
+// ------- Test -------
+
+assert(part1 == "26,99", "WA")
+assert(part2 == "62,48", "WA")
+
+//: [Next](@next)

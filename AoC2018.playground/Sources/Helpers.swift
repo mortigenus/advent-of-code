@@ -16,7 +16,7 @@ extension NSRegularExpression {
     }
 }
 
-public func readInput() throws -> String {
+public func readInput(trimWhitespace: Bool = true) throws -> String {
     let input: String
     if CommandLine.arguments.count == 4 && CommandLine.arguments[2] == "cli" {
         let currentDirectoryURL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
@@ -32,5 +32,7 @@ public func readInput() throws -> String {
         input = try String(contentsOfFile:path)
     }
 
-    return input.trimmingCharacters(in: .whitespacesAndNewlines)
+    return trimWhitespace
+        ? input.trimmingCharacters(in: .whitespacesAndNewlines)
+        : input
 }
