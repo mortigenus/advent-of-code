@@ -21,27 +21,21 @@ let log = input
 var parsedLog = [LogRecord]()
 var currentRecord: LogRecord?
 var currentFellAsleepTime: Int?
- log.forEach { record in
+log.forEach { record in
     if (record.contains("Guard")) {
         if let currentRecord = currentRecord {
             parsedLog.append(currentRecord)
         }
 
         currentRecord = record.firstIndex(of: "#")
-            .flatMap { index in
-                record.index(after: index)
-            }
-            .flatMap { idIndex in
-                Scanner(string: String(record[idIndex...]))
-            }
+            .flatMap { record.index(after: $0) }
+            .flatMap { Scanner(string: String(record[$0...])) }
             .flatMap { scanner in
                 var id: Int = 0
                 scanner.scanInt(&id)
                 return id
             }
-            .flatMap {
-                LogRecord(id: $0)
-            }
+            .flatMap { LogRecord(id: $0) }
     } else {
         let minutesStart = record.index(record.startIndex, offsetBy: 15)
         let minutesEnd = record.index(record.startIndex, offsetBy: 17)
@@ -51,21 +45,11 @@ var currentFellAsleepTime: Int?
         if (record.contains("falls")) {
             currentFellAsleepTime = Int(String(record[minutesRange]))
         } else if (record.contains("wakes")) {
-            Int(String(record[minutesRange]))
-                .flatMap { wokeUpTime -> (Int, Range<Int>) in
-                    if let fellAsleepTime = currentFellAsleepTime {
-                        return (
-                            wokeUpTime - fellAsleepTime,
-                            fellAsleepTime..<wokeUpTime
-                        )
-                    } else {
-                        fatalError("Wrong Input Format")
-                    }
-                }
-                .flatMap { (sum, range) in
-                    currentRecord?.sumMinutesSlept += sum
-                    currentRecord?.ranges.append(range)
-                }
+            if let wokeUpTime = Int(String(record[minutesRange])),
+                let fellAsleepTime = currentFellAsleepTime {
+                currentRecord?.sumMinutesSlept += (wokeUpTime - fellAsleepTime)
+                currentRecord?.ranges.append(fellAsleepTime..<wokeUpTime)
+            }
         } else {
             fatalError("Wrong Input Format")
         }
@@ -84,8 +68,8 @@ let map = parsedLog.reduce(into: [Int:AccumulatedLog]()) { acc, val in
         acc[val.id] = AccumulatedLog()
     }
     acc[val.id]!.sumMinutesSlept += val.sumMinutesSlept
-    _ = val.ranges.flatMap { range in
-        range.map {
+    val.ranges.forEach { range in
+        range.forEach {
             acc[val.id]!.countedMinutes.add($0)
         }
     }

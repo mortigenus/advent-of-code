@@ -38,19 +38,13 @@ extension Patch {
         let captureGroupToString = regex.captureGroupToString(in: patchDescription)
         let captureGroupToInt = regex.captureGroupToInt(in: patchDescription)
 
-        guard let id = captureGroupToString("id") else {
-            fatalError("Wrong input format")
-        }
-        guard let x = captureGroupToInt("x") else {
-            fatalError("Wrong input format")
-        }
-        guard let y = captureGroupToInt("y") else {
-            fatalError("Wrong input format")
-        }
-        guard let width = captureGroupToInt("width") else {
-            fatalError("Wrong input format")
-        }
-        guard let height = captureGroupToInt("height") else {
+        guard
+            let id = captureGroupToString("id"),
+            let x = captureGroupToInt("x"),
+            let y = captureGroupToInt("y"),
+            let width = captureGroupToInt("width"),
+            let height = captureGroupToInt("height")
+        else {
             fatalError("Wrong input format")
         }
 

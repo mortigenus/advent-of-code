@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:AoC2019.playground">
+   </FileRef>
+   <FileRef
       location = "group:AoC2018.playground">
    </FileRef>
    <FileRef

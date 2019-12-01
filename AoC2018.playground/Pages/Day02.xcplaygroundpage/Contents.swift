@@ -45,10 +45,9 @@ func distance(_ s1: String, _ s2: String) -> Int {
 
 func commonPart(_ s1: String, _ s2: String) -> String {
     var resultString = s1
-    _ = s1.indices.first(where: { s1[$0] != s2[$0] })
-        .flatMap { index in
-            resultString.remove(at: index)
-        }
+    if let index = s1.indices.first(where: { s1[$0] != s2[$0] }) {
+        resultString.remove(at: index)
+    }
     return resultString
 }
 
