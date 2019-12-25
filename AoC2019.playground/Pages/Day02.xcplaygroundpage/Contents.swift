@@ -11,7 +11,7 @@ let values = input
 // ------- Part 1 -------
 
 func run(program: [Int], _ noun: Int, _ verb: Int) -> Int {
-    var program = values
+    var program = program
     program[1] = noun
     program[2] = verb
     var currentPosition = 0
