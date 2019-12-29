@@ -14,21 +14,10 @@ func run(program: [Int], _ noun: Int, _ verb: Int) -> Int {
     var program = program
     program[1] = noun
     program[2] = verb
-    var currentPosition = 0
-    programExecution: while currentPosition < program.count {
-        switch program[currentPosition] {
-        case 1:
-            program[program[currentPosition + 3]] = program[program[currentPosition + 1]] + program[program[currentPosition + 2]]
-        case 2:
-            program[program[currentPosition + 3]] = program[program[currentPosition + 1]] * program[program[currentPosition + 2]]
-        case 99:
-            break programExecution
-        default:
-            fatalError("Program Error!")
-        }
-        currentPosition += 4
-    }
-    return program[0]
+
+    let intcode = Intcode(program: program)
+    intcode.run()
+    return intcode.program[0]
 }
 
 let part1 = run(program: values, 12, 2)
