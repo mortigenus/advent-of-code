@@ -1,5 +1,7 @@
 Solutions to https://adventofcode.com/2018 (Day 1 to 14) and https://adventofcode.com/2019 in Swift.
 
+To run a solution from the command line you can use: `./run.sh 2018 03`
+
 ## 2018
 - [Day 1](AoC2018.playground/Pages/Day01.xcplaygroundpage/Contents.swift)
 - [Day 2](AoC2018.playground/Pages/Day02.xcplaygroundpage/Contents.swift)
@@ -25,3 +27,4 @@ Solutions to https://adventofcode.com/2018 (Day 1 to 14) and https://adventofcod
 - [Day 6](AoC2019.playground/Pages/Day06.xcplaygroundpage/Contents.swift)
 - [Day 7](AoC2019.playground/Pages/Day07.xcplaygroundpage/Contents.swift)
 - [Day 8](AoC2019.playground/Pages/Day08.xcplaygroundpage/Contents.swift)
+- [Day 9](AoC2019.playground/Pages/Day09.xcplaygroundpage/Contents.swift)

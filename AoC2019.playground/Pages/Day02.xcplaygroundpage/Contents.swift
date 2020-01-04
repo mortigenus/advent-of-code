@@ -17,7 +17,7 @@ func run(program: [Int], _ noun: Int, _ verb: Int) -> Int {
 
     let intcode = Intcode(program: program)
     intcode.run()
-    return intcode.program[0]
+    return intcode.readMemory(at: 0)
 }
 
 let part1 = run(program: values, 12, 2)

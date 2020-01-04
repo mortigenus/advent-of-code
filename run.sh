@@ -1,3 +1,3 @@
 #!/bin/sh
 
-cat AoC$2.playground/Sources/*.swift AoC$2.playground/Pages/Day$1.xcplaygroundpage/Contents.swift | swift - -- "cli" "AoC$2.playground/Pages/Day$1.xcplaygroundpage/"
+cat AoC$1.playground/Sources/*.swift AoC$1.playground/Pages/Day$2.xcplaygroundpage/Contents.swift | swift - -- "cli" "AoC$1.playground/Pages/Day$2.xcplaygroundpage/"

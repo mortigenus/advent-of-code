@@ -1,9 +1,15 @@
 import Foundation
 
 public class Intcode {
-    public internal(set) var program: [Int]
+
+    public private(set) var program: [Int]
+
+    typealias Memory = [Int: Int]
+    private var memory: Memory
+
     public init(program: [Int], input: [Int] = []) {
         self.program = program
+        self.memory = Memory(uniqueKeysWithValues: zip(0..., program))
         self.input = input
     }
 
@@ -19,7 +25,7 @@ public class Intcode {
         }
     }
 
-    public var output: (Int) -> Void = { print($0) }
+    public var output: ((Int) -> Void)?
     
     public enum State {
         case running
@@ -27,34 +33,43 @@ public class Intcode {
         case halted
     }
     public internal(set) var state: State = .running
-    public func run() {
+
+    @discardableResult
+    public func run() -> [Int] {
         self.state = .running
+        var result = [Int]()
         while self.state == .running {
-            self.step()
+            if let stepOutput = self.step() {
+                result.append(stepOutput)
+            }
         }
+        return result
     }
 
-    var currentPosition: Int = 0
+    var currentPosition = 0
+    var relativeBase = 0
 
-    func step() {
-        let operation = program[currentPosition]
+    func step() -> Int? {
+        let operation = readMemory(at: currentPosition)
         switch Operation(rawValue: operation % 100)! {
         case .add:
-            program[writePosition(3)] = param(1) + param(2)
+            writeToMemory(at: position(3), param(1) + param(2))
             currentPosition += 4
         case .mult:
-            program[writePosition(3)] = param(1) * param(2)
+            writeToMemory(at: position(3), param(1) * param(2))
             currentPosition += 4
         case .read:
             if input.count > 0 {
-                program[writePosition(1)] = input.removeFirst()
+                writeToMemory(at: position(1), input.removeFirst())
                 currentPosition += 2
             } else {
                 state = .paused
             }
         case .write:
-            output(param(1))
+            let value = param(1)
+            output?(value)
             currentPosition += 2
+            return value
         case .ifTrue:
             if param(1) != 0 {
                 currentPosition = param(2)
@@ -68,19 +83,24 @@ public class Intcode {
                 currentPosition += 3
             }
         case .lessThan:
-            program[writePosition(3)] = param(1) < param(2) ? 1 : 0
+            writeToMemory(at: position(3), param(1) < param(2) ? 1 : 0)
             currentPosition += 4
         case .equals:
-            program[writePosition(3)] = param(1) == param(2) ? 1 : 0
+            writeToMemory(at: position(3), param(1) == param(2) ? 1 : 0)
             currentPosition += 4
+        case .adjust:
+            relativeBase += param(1)
+            currentPosition += 2
         case .halt:
             state = .halted
         }
+        return nil
     }
 
     enum Mode: Int {
         case position
         case immediate
+        case relative
 
         public init?(rawValue: Int) {
             switch rawValue % 10 {
@@ -88,6 +108,8 @@ public class Intcode {
                 self = .position
             case 1:
                 self = .immediate
+            case 2:
+                self = .relative
             default:
                 return nil
             }
@@ -103,22 +125,34 @@ public class Intcode {
         case ifFalse
         case lessThan
         case equals
+        case adjust
         case halt = 99
     }
 
-    func writePosition(_ number: Int) -> Int {
-        program[currentPosition + number]
+
+    public func readMemory(at address: Int) -> Int {
+        memory[address, default: 0]
     }
 
-    func param(_ number: Int) -> Int {
+    func writeToMemory(at address: Int, _ value: Int) {
+        memory[address] = value
+    }
+
+    func position(_ number: Int) -> Int {
         let operation = program[currentPosition]
         let modes = [operation / 100, operation / 1000, operation / 10000]
             .map({ Mode(rawValue: $0)! })
         switch modes[number - 1] {
         case .position:
-            return program[program[currentPosition + number]]
+            return readMemory(at: currentPosition + number)
         case .immediate:
-            return program[currentPosition + number]
+            return currentPosition + number
+        case .relative:
+            return relativeBase + readMemory(at: currentPosition + number)
         }
+    }
+
+    func param(_ number: Int) -> Int {
+        readMemory(at: position(number))
     }
 }
