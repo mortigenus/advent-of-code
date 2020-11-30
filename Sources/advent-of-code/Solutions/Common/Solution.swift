@@ -1,0 +1,88 @@
+//
+//  Solution.swift
+//  
+//
+//  Created by Ivan Chalov on 30.11.20.
+//
+
+import Foundation
+
+enum SolutionError: Error {
+    case solutionInputNotFound
+    case parsingSolutionInputFailed
+    case solutionNotFound
+    case notImplemented
+}
+
+protocol Solution {
+    var input: Input { get set }
+    init(input: Input)
+    func run() throws
+}
+
+struct Input {
+    var year: Int
+    var day: Int
+
+    func get(trimmingWhitespace: Bool = true) throws -> String {
+        let fileName = "\(year)-\(String(format:"%02d", day))"
+        guard let url = Bundle.module.url(forResource: fileName, withExtension: "txt") else {
+            throw SolutionError.solutionInputNotFound
+        }
+        let data = try Data(contentsOf: url)
+        guard let result = String(data: data, encoding: .utf8) else {
+            throw SolutionError.parsingSolutionInputFailed
+        }
+        return trimmingWhitespace
+            ? result.trimmingCharacters(in: .whitespacesAndNewlines)
+            : result
+    }
+}
+
+struct SolutionRegistry {
+    static var registry: [Int : [Solution.Type]] = [
+        2018: [
+            Solution_2018_01.self,
+            Solution_2018_02.self,
+            Solution_2018_03.self,
+            Solution_2018_04.self,
+            Solution_2018_05.self,
+            Solution_2018_06.self,
+            Solution_2018_07.self,
+            Solution_2018_08.self,
+            Solution_2018_09.self,
+            Solution_2018_10.self,
+            Solution_2018_11.self,
+            Solution_2018_12.self,
+            Solution_2018_13.self,
+            Solution_2018_14.self,
+        ],
+        2019: [
+            Solution_2019_01.self,
+            Solution_2019_02.self,
+            Solution_2019_03.self,
+            Solution_2019_04.self,
+            Solution_2019_05.self,
+            Solution_2019_06.self,
+            Solution_2019_07.self,
+            Solution_2019_08.self,
+            Solution_2019_09.self,
+        ],
+        2020: [
+            Solution_2020_01.self,
+        ],
+    ]
+
+    static func solution(year: Int, day: Int, input: Input) throws -> Solution {
+        let day = day - 1 // 1st of December is at index 0
+        guard
+            let solutionsForYear = registry[year],
+            day >= 0 && day < solutionsForYear.count
+        else {
+            throw SolutionError.solutionNotFound
+        }
+        return solutionsForYear[day].init(input: input)
+    }
+
+    private init() {}
+}

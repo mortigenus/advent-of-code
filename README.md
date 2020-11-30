@@ -1,30 +1,33 @@
-Solutions to https://adventofcode.com/2018 (Day 1 to 14) and https://adventofcode.com/2019 in Swift.
+Solutions for [Advent of Code](https://adventofcode.com) in Swift.
 
-To run a solution from the command line you can use: `./run.sh 2018 03`
+To run a solution from the command line you can use: `swift run advent-of-code <day> [<year>]`
 
 ## 2018
-- [Day 1](AoC2018.playground/Pages/Day01.xcplaygroundpage/Contents.swift)
-- [Day 2](AoC2018.playground/Pages/Day02.xcplaygroundpage/Contents.swift)
-- [Day 3](AoC2018.playground/Pages/Day03.xcplaygroundpage/Contents.swift)
-- [Day 4](AoC2018.playground/Pages/Day04.xcplaygroundpage/Contents.swift)
-- [Day 5](AoC2018.playground/Pages/Day05.xcplaygroundpage/Contents.swift)
-- [Day 6](AoC2018.playground/Pages/Day06.xcplaygroundpage/Contents.swift)
-- [Day 7](AoC2018.playground/Pages/Day07.xcplaygroundpage/Contents.swift)
-- [Day 8](AoC2018.playground/Pages/Day08.xcplaygroundpage/Contents.swift)
-- [Day 9](AoC2018.playground/Pages/Day09.xcplaygroundpage/Contents.swift)
-- [Day 10](AoC2018.playground/Pages/Day10.xcplaygroundpage/Contents.swift)
-- [Day 11](AoC2018.playground/Pages/Day11.xcplaygroundpage/Contents.swift)
-- [Day 12](AoC2018.playground/Pages/Day12.xcplaygroundpage/Contents.swift)
-- [Day 13](AoC2018.playground/Pages/Day13.xcplaygroundpage/Contents.swift)
-- [Day 14](AoC2018.playground/Pages/Day14.xcplaygroundpage/Contents.swift)
+- [Day 1](Sources/advent-of-code/Solutions/2018/Solution_2018_01.swift)
+- [Day 2](Sources/advent-of-code/Solutions/2018/Solution_2018_02.swift)
+- [Day 3](Sources/advent-of-code/Solutions/2018/Solution_2018_03.swift)
+- [Day 4](Sources/advent-of-code/Solutions/2018/Solution_2018_04.swift)
+- [Day 5](Sources/advent-of-code/Solutions/2018/Solution_2018_05.swift)
+- [Day 6](Sources/advent-of-code/Solutions/2018/Solution_2018_06.swift)
+- [Day 7](Sources/advent-of-code/Solutions/2018/Solution_2018_07.swift)
+- [Day 8](Sources/advent-of-code/Solutions/2018/Solution_2018_08.swift)
+- [Day 9](Sources/advent-of-code/Solutions/2018/Solution_2018_09.swift)
+- [Day 10](Sources/advent-of-code/Solutions/2018/Solution_2018_10.swift)
+- [Day 11](Sources/advent-of-code/Solutions/2018/Solution_2018_11.swift)
+- [Day 12](Sources/advent-of-code/Solutions/2018/Solution_2018_12.swift)
+- [Day 13](Sources/advent-of-code/Solutions/2018/Solution_2018_13.swift)
+- [Day 14](Sources/advent-of-code/Solutions/2018/Solution_2018_14.swift)
 
 ## 2019 
-- [Day 1](AoC2019.playground/Pages/Day01.xcplaygroundpage/Contents.swift)
-- [Day 2](AoC2019.playground/Pages/Day02.xcplaygroundpage/Contents.swift)
-- [Day 3](AoC2019.playground/Pages/Day03.xcplaygroundpage/Contents.swift)
-- [Day 4](AoC2019.playground/Pages/Day04.xcplaygroundpage/Contents.swift)
-- [Day 5](AoC2019.playground/Pages/Day05.xcplaygroundpage/Contents.swift)
-- [Day 6](AoC2019.playground/Pages/Day06.xcplaygroundpage/Contents.swift)
-- [Day 7](AoC2019.playground/Pages/Day07.xcplaygroundpage/Contents.swift)
-- [Day 8](AoC2019.playground/Pages/Day08.xcplaygroundpage/Contents.swift)
-- [Day 9](AoC2019.playground/Pages/Day09.xcplaygroundpage/Contents.swift)
+- [Day 1](Sources/advent-of-code/Solutions/2019/Solution_2019_01.swift)
+- [Day 2](Sources/advent-of-code/Solutions/2019/Solution_2019_02.swift)
+- [Day 3](Sources/advent-of-code/Solutions/2019/Solution_2019_03.swift)
+- [Day 4](Sources/advent-of-code/Solutions/2019/Solution_2019_04.swift)
+- [Day 5](Sources/advent-of-code/Solutions/2019/Solution_2019_05.swift)
+- [Day 6](Sources/advent-of-code/Solutions/2019/Solution_2019_06.swift)
+- [Day 7](Sources/advent-of-code/Solutions/2019/Solution_2019_07.swift)
+- [Day 8](Sources/advent-of-code/Solutions/2019/Solution_2019_08.swift)
+- [Day 9](Sources/advent-of-code/Solutions/2019/Solution_2019_09.swift)
+
+## 2020
+- [Day 1](Sources/advent-of-code/Solutions/2020/Solution_2020_01.swift)
