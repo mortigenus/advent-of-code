@@ -2,12 +2,30 @@
   "object": {
     "pins": [
       {
+        "package": "swift-algorithms",
+        "repositoryURL": "https://github.com/apple/swift-algorithms",
+        "state": {
+          "branch": null,
+          "revision": "bb3bafeca0e164ece3403a9de646b7d38c07dd49",
+          "version": "0.0.2"
+        }
+      },
+      {
         "package": "swift-argument-parser",
         "repositoryURL": "https://github.com/apple/swift-argument-parser",
         "state": {
           "branch": null,
           "revision": "92646c0cdbaca076c8d3d0207891785b3379cbff",
           "version": "0.3.1"
+        }
+      },
+      {
+        "package": "swift-numerics",
+        "repositoryURL": "https://github.com/apple/swift-numerics",
+        "state": {
+          "branch": null,
+          "revision": "6b24333510e9044cf4716a07bed65eeed6bc6393",
+          "version": "0.0.8"
         }
       }
     ]

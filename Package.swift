@@ -10,12 +10,16 @@ let package = Package(
          .package(
             url: "https://github.com/apple/swift-argument-parser",
             from: "0.3.1"),
+        .package(
+            url: "https://github.com/apple/swift-algorithms",
+            from: "0.0.2"),
     ],
     targets: [
         .target(
             name: "advent-of-code",
             dependencies: [
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
+                .product(name: "Algorithms", package: "swift-algorithms"),
             ],
             resources: [
                 .process("Resources"),
