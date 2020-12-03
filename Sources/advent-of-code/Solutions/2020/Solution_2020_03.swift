@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Algorithms
 
 struct Solution_2020_03: Solution {
     var input: Input
@@ -15,24 +16,32 @@ struct Solution_2020_03: Solution {
             .map(String.init)
 
         // ------- Part 1 -------
-        func solve(stepX: Int, stepY: Int) -> Int {
+        func solve(steps: [(x: Int, y: Int)]) -> Int {
             let width = input[0].count
-            var i = 0, j = 0, count = 0
-            while j < input.count {
-                let s = input[j]
-                if s[s.index(s.startIndex, offsetBy: i)] == "#" {
-                    count += 1
+            return input.indices
+                .reduce(into: Array(repeating: 0, count: steps.count)) { acc, row in
+                    let s = input[row]
+                    steps.indexed()
+                        .filter { _, step in
+                            row % step.y == 0
+                        }
+                        .map { index, step in
+                            (index: index, element: step.x * (row / step.y) % width)
+                        }
+                        .filter { _, column in
+                            s[s.index(s.startIndex, offsetBy: column)] == "#"
+                        }
+                        .forEach { index, _ in
+                            acc[index] += 1
+                        }
                 }
-                j += stepY
-                i = (i + stepX) % width
-            }
-            return count
+                .product()
         }
-        let part1 = solve(stepX: 3, stepY: 1)
+        let part1 = solve(steps: [(3,1)])
         print(part1)
 
         // ------- Part 2 -------
-        let part2 = [(1,1), (3,1), (5,1), (7,1), (1,2)].map(solve).product()
+        let part2 = solve(steps: [(1,1), (3,1), (5,1), (7,1), (1,2)])
         print(part2)
 
         // ------- Test -------
