@@ -35,12 +35,3 @@ struct Solution_2020_01: Solution {
         assert(part2 == 116115990, "WA")
     }
 }
-
-private extension Array where Element == Int {
-    func sum() -> Int {
-        reduce(0, +)
-    }
-    func product() -> Int {
-        reduce(1, *)
-    }
-}
