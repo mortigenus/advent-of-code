@@ -8,19 +8,35 @@
 import Foundation
 import Algorithms
 
+private enum Point {
+    case empty
+    case tree
+
+    init(character: Character) {
+        switch character {
+        case "#":
+            self = .tree
+        case ".":
+            self = .empty
+        default:
+            fatalError("Incorrect Input")
+        }
+    }
+}
+
 struct Solution_2020_03: Solution {
     var input: Input
     func run() throws {
         let input = try self.input.get()
             .split(whereSeparator: \.isNewline)
             .map(String.init)
+            .map { $0.map(Point.init(character:)) }
 
         // ------- Part 1 -------
         func solve(steps: [(x: Int, y: Int)]) -> Int {
             let width = input[0].count
             return input.indices
                 .reduce(into: Array(repeating: 0, count: steps.count)) { acc, row in
-                    let s = input[row]
                     steps.indexed()
                         .filter { _, step in
                             row % step.y == 0
@@ -29,7 +45,7 @@ struct Solution_2020_03: Solution {
                             (index: index, element: step.x * (row / step.y) % width)
                         }
                         .filter { _, column in
-                            s[s.index(s.startIndex, offsetBy: column)] == "#"
+                            input[row][column] == .tree
                         }
                         .forEach { index, _ in
                             acc[index] += 1
