@@ -20,11 +20,20 @@ struct AdventOfCode: ParsableCommand {
     }
 }
 
+let askDay = true
+//let askDay = false
 if isRunningFromXcode() {
-    print("Day: ", terminator: "")
-    let day = readLine()
-    print("Year [\(currentYear())]: ", terminator: "")
-    let year = readLine()
+    let day: String?
+    let year: String?
+    if askDay {
+        print("Day: ", terminator: "")
+        day = readLine()
+        print("Year [\(currentYear())]: ", terminator: "")
+        year = readLine()
+    } else {
+        day = "6"
+        year = "2020"
+    }
     let input = [day, year].compactMap { $0 }.filter { !$0.isEmpty }
     AdventOfCode.main(input)
 } else {
