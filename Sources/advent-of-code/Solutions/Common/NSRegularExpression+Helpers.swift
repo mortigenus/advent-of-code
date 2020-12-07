@@ -14,4 +14,19 @@ extension NSRegularExpression {
                 .flatMap({ String(string[$0]) })
         }
     }
+
+    public func captureGroupToInts(in string: String) -> (String) -> [Int] {
+        return { captureGroupName in
+            return self.captureGroupToStrings(in: string)(captureGroupName)
+                .compactMap({ Int($0) })
+        }
+    }
+
+    public func captureGroupToStrings(in string: String) -> (String) -> [String] {
+        return { captureGroupName in
+            return self.matches(in: string, range: NSMakeRange(0, string.count))
+                .compactMap({ Range($0.range(withName: captureGroupName), in:string) })
+                .map({ String(string[$0]) })
+        }
+    }
 }

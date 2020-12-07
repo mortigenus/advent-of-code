@@ -13,6 +13,10 @@ let package = Package(
         .package(
             url: "https://github.com/apple/swift-algorithms",
             from: "0.0.2"),
+        .package(
+            name: "Prelude",
+            url: "https://github.com/pointfreeco/swift-prelude.git",
+            .branch("main")),
     ],
     targets: [
         .target(
@@ -20,6 +24,7 @@ let package = Package(
             dependencies: [
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "Algorithms", package: "swift-algorithms"),
+                .product(name: "Prelude", package: "Prelude"),
             ],
             resources: [
                 .process("Resources"),
