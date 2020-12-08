@@ -1,12 +1,11 @@
 import Foundation
+import Prelude
 
 extension NSRegularExpression {
     public func captureGroupToInt(in string: String) -> (String) -> Int? {
-        return { captureGroupName in
-            return self.captureGroupToString(in: string)(captureGroupName)
-                .flatMap({ Int($0) })
-        }
+        captureGroupToString(in: string) >=> Int.init
     }
+
     public func captureGroupToString(in string: String) -> (String) -> String? {
         return { captureGroupName in
             return self.firstMatch(in: string, range: NSMakeRange(0, string.count))
@@ -16,10 +15,7 @@ extension NSRegularExpression {
     }
 
     public func captureGroupToInts(in string: String) -> (String) -> [Int] {
-        return { captureGroupName in
-            return self.captureGroupToStrings(in: string)(captureGroupName)
-                .compactMap({ Int($0) })
-        }
+        captureGroupToStrings(in: string) >>> mapOptional(Int.init)
     }
 
     public func captureGroupToStrings(in string: String) -> (String) -> [String] {
