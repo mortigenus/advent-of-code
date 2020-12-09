@@ -38,3 +38,4 @@ To run a solution from the command line you can use: `swift run advent-of-code <
 - [Day 6](Sources/advent-of-code/Solutions/2020/Solution_2020_06.swift)
 - [Day 7](Sources/advent-of-code/Solutions/2020/Solution_2020_07.swift)
 - [Day 8](Sources/advent-of-code/Solutions/2020/Solution_2020_08.swift)
+- [Day 9](Sources/advent-of-code/Solutions/2020/Solution_2020_09.swift)
