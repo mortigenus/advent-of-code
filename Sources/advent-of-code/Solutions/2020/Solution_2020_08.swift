@@ -8,35 +8,37 @@
 import Foundation
 import Prelude
 
-private struct Interpreter {
-    struct Instruction {
-        enum Operation: String {
-            case acc
-            case jmp
-            case nop
-        }
-        var operation: Operation
-        var value: Int
+private typealias Bootcode = [Instruction]
 
-        var canSwap: Bool {
-            operation != .acc
-        }
+private struct Instruction {
+    enum Operation: String {
+        case acc
+        case jmp
+        case nop
+    }
+    var operation: Operation
+    var value: Int
 
-        mutating func swap() {
-            switch operation {
-            case .acc: break
-            case .jmp: operation = .nop
-            case .nop: operation = .jmp
-            }
-        }
+    var canSwap: Bool {
+        operation != .acc
     }
 
-    var instructions: [Instruction]
+    mutating func swap() {
+        switch operation {
+        case .acc: break
+        case .jmp: operation = .nop
+        case .nop: operation = .jmp
+        }
+    }
+}
+
+private struct Interpreter {
+    var bootcode: Bootcode
     var position: Int = 0
     var accValue = 0
 
-    init(instructionDescriptions: [String]) {
-        instructions = instructionDescriptions.map(Instruction.init(string:))
+    init(bootcode: Bootcode) {
+        self.bootcode = bootcode
     }
 
     private var visited = Set<Int>()
@@ -48,7 +50,7 @@ private struct Interpreter {
     }
 
     private mutating func step() {
-        let current = instructions[position]
+        let current = bootcode[position]
         switch current.operation {
         case .acc:
             accValue += current.value
@@ -62,13 +64,13 @@ private struct Interpreter {
 
     private var visitedSwappableCommands = 0
     private var isFinished: Bool {
-        position >= instructions.count
+        position >= bootcode.count
     }
     mutating func tryToFix(attempt: Int) -> Bool {
         while visited.insert(position).inserted && !isFinished {
-            if instructions[position].canSwap {
+            if bootcode[position].canSwap {
                 if attempt == visitedSwappableCommands {
-                    instructions[position].swap()
+                    bootcode[position].swap()
                 }
                 visitedSwappableCommands += 1
             }
@@ -78,7 +80,7 @@ private struct Interpreter {
     }
 }
 
-extension Interpreter.Instruction {
+extension Instruction {
     init(string: String) {
         guard
             let operation = Operation(rawValue: String(string.prefix(3))),
@@ -96,10 +98,10 @@ struct Solution_2020_08: Solution {
         let input = try self.input.get()
             .split(whereSeparator: \.isNewline)
             .map(String.init)
-        let original = Interpreter(instructionDescriptions: input)
+        let bootcode = input.map(Instruction.init(string:))
 
         // ------- Part 1 -------
-        var loopInterpreter = original
+        var loopInterpreter = Interpreter(bootcode: bootcode)
         let part1 = loopInterpreter.findLoop()
         print(part1)
 
@@ -107,7 +109,7 @@ struct Solution_2020_08: Solution {
         func fixInterpreter() -> Int {
             var attempt = 0
             while true {
-                var attemptInterpreter = original
+                var attemptInterpreter = Interpreter(bootcode: bootcode)
                 if attemptInterpreter.tryToFix(attempt: attempt) {
                     return attemptInterpreter.accValue
                 }

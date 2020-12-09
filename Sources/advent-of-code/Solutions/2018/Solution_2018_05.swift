@@ -21,20 +21,15 @@ struct Solution_2018_05: Solution {
         let part1 = result.count
         print(part1)
 
-        var prepareMap = [Character: [Character]]()
-        for char in "abcdefghijklmnopqrstuvwxyz" {
-            prepareMap[char] = [Character]()
-        }
-
-        let map: [Character:[Character]] = polymer.reduce(into: prepareMap) { acc, c in
-            acc.forEach { k, _ in
+        let map: [Character:[Character]] = polymer.reduce(into: [Character: [Character]]()) { acc, c in
+            "abcdefghijklmnopqrstuvwxyz".forEach { k in
                 guard String(k) != c.lowercased() else {
                     return
                 }
-                if let top = acc[k]!.last, shouldAnnihilate(c, top) {
+                if let top = acc[k]?.last, shouldAnnihilate(c, top) {
                     acc[k]!.removeLast()
                 } else {
-                    acc[k]!.append(c)
+                    acc[k, default: []].append(c)
                 }
             }
         }
