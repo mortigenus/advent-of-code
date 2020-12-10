@@ -53,3 +53,9 @@ extension Collection {
         return acc
     }
 }
+
+extension Collection where Element: Hashable {
+    func histogram() -> [Element: Int] {
+        return self.reduce(into: [:]) { $0[$1, default: 0] += 1 }
+    }
+}
