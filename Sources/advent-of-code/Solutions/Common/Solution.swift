@@ -81,6 +81,7 @@ struct SolutionRegistry {
             Solution_2020_10.self,
             Solution_2020_11.self,
             Solution_2020_12.self,
+            Solution_2020_13.self,
         ],
     ]
 
