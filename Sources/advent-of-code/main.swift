@@ -20,24 +20,32 @@ struct AdventOfCode: ParsableCommand {
     }
 }
 
-let askDay = true
-//let askDay = false
-if isRunningFromXcode() {
+run()
+
+func run() {
+//    hardcodedRun()
+//    return
+//
+    if isRunningFromXcode() {
+        runFromXcode()
+    } else {
+        AdventOfCode.main()
+    }
+}
+
+func hardcodedRun() {
+    AdventOfCode.main(["15"])
+}
+
+func runFromXcode() {
     let day: String?
     let year: String?
-    if askDay {
-        print("Day: ", terminator: "")
-        day = readLine()
-        print("Year [\(currentYear())]: ", terminator: "")
-        year = readLine()
-    } else {
-        day = "6"
-        year = "2020"
-    }
+    print("Day: ", terminator: "")
+    day = readLine()
+    print("Year [\(currentYear())]: ", terminator: "")
+    year = readLine()
     let input = [day, year].compactMap { $0 }.filter { !$0.isEmpty }
     AdventOfCode.main(input)
-} else {
-    AdventOfCode.main()
 }
 
 func isRunningFromXcode() -> Bool {
