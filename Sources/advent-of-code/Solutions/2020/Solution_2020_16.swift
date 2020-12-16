@@ -10,14 +10,17 @@ import Algorithms
 import Prelude
 
 private struct Rules {
-    var allIntervals: FlattenSequence<[ClosedRange<Int>]>
-    var rules = [String: FlattenSequence<[ClosedRange<Int>]>]()
+    private var rules = [String: [Bool]]()
+    private var allIntervals: [Bool] = Array(repeating: false, count: 1000)
+
+    var fields: Set<String> {
+        Set(rules.keys)
+    }
 
     init(input: String) {
-        var allRanges = [ClosedRange<Int>]()
         for line in input.split(whereSeparator: \.isNewline) {
             let ruleParts = line.split(separator: ":")
-            let ranges = ruleParts[1].dropFirst()
+            ruleParts[1].dropFirst()
                 .components(separatedBy: " or ")
                 .map { range in
                     range
@@ -25,10 +28,37 @@ private struct Rules {
                         .compactMap(String.init >>> Int.init)
                         |> { $0[0]...$0[1] }
                 }
-            allRanges.append(contentsOf: ranges)
-            rules[String(ruleParts[0])] = ranges.joined()
+                .forEach { range in
+                    range.forEach {
+                        allIntervals[$0] = true
+                        rules[
+                            String(ruleParts[0]),
+                            default: Array(repeating: false, count: 1000)
+                        ][$0] = true
+                    }
+                }
         }
-        allIntervals = allRanges.joined()
+    }
+
+    func isValid(number: Int) -> Bool {
+        allIntervals[number]
+    }
+
+    func isValid(ticket: Ticket) -> Bool {
+        ticket.allSatisfy(isValid)
+    }
+
+    func validRules(for number: Int) -> Set<String> {
+        rules.filter { $0.value[number] }.map(\.key) |> Set.init
+    }
+}
+
+private typealias Ticket = [Int]
+extension Ticket {
+    init(string: String) {
+        self = string
+            .split(separator: ",")
+            .compactMap(String.init >>> Int.init)
     }
 }
 
@@ -38,79 +68,51 @@ struct Solution_2020_16: Solution {
         let input = try self.input.get()
             .components(separatedBy: "\n\n")
         let rules = Rules(input: input[0])
+        let myTicket = input[1]
+            .split(whereSeparator: \.isNewline)[1]
+            |> String.init >>> Ticket.init(string:)
         let tickets = input[2]
             .split(whereSeparator: \.isNewline)
             .map(String.init)
             .dropFirst()
-            .map { ticket -> [Int] in
-                ticket
-                    .split(separator: ",")
-                    .compactMap(String.init >>> Int.init)
-            }
+            .map(Ticket.init(string:))
 
         // ------- Part 1 -------
         let part1: Int = tickets
-            .flatMap {
-                $0.filter { !rules.allIntervals.contains($0) }
-            }
+            .flatMap { ticket in ticket.filter { !rules.isValid(number: $0) } }
             .sum()
         print(part1)
 
         // ------- Part 2 -------
-        let validTickets = tickets
-            .filter {
-                $0.allSatisfy { rules.allIntervals.contains($0) }
-            }
+        let validTickets = tickets.filter { rules.isValid(ticket: $0) }
 
-        var xs = Array(
-            repeating: Array(
-                repeating: Set<String>(),
-                count: validTickets[0].count
-            ),
-            count: validTickets.count
-        )
+        let possibleFields = validTickets.map { $0.map { rules.validRules(for: $0) } }
 
-        for (ticketIndex, ticketNumbers) in validTickets.indexed() {
-            for (numberIndex, number) in ticketNumbers.indexed() {
-                for (field, range) in rules.rules {
-                    if range.contains(number) {
-                        xs[ticketIndex][numberIndex].insert(field)
-                    }
-                }
-            }
+        var intersections = possibleFields[0].indices.map {
+            possibleFields[column: $0].scan(uncurry(Set.intersection))
         }
 
-        var intersections = Array(repeating: Set<String>?.none, count: xs[0].count)
-        for i in xs[0].indices {
-            for j in xs.indices {
-                if intersections[i] == nil {
-                    intersections[i] = xs[j][i]
-                } else {
-                    intersections[i]!.formIntersection(xs[j][i])
-                }
-            }
-        }
-
-        var leftFields = Set(rules.rules.keys)
+        var remainingFields = rules.fields
         var resultPositions = Array(repeating: "", count: intersections.count)
-        while !leftFields.isEmpty {
-            let index = intersections.firstIndex(where: { $0!.count == 1 })!
-            let field = intersections[index]!.first!
-            resultPositions[index] = field
-            intersections.indices.forEach {
-                intersections[$0]?.remove(field)
+        while !remainingFields.isEmpty {
+            intersections.indexed().filter { $0.element.count == 1 }.forEach {
+                let field = $0.element.first!
+                resultPositions[$0.index] = field
+                intersections.indices.forEach { intersections[$0].remove(field) }
+                remainingFields.remove(field)
             }
-            leftFields.remove(field)
         }
 
-        let departureFields = resultPositions.indexed().filter { $0.element.hasPrefix("departure") }
-        let myTicket = input[1].split(whereSeparator: \.isNewline)[1].split(separator: ",").compactMap(String.init >>> Int.init)
-        var part2 = 1
-        for (index, _) in departureFields {
-            part2 *= myTicket[index]
-        }
+        let departureFieldPositions = resultPositions
+            .indexed()
+            .filter { $0.element.hasPrefix("departure") }
+            .map(\.index)
+
+        let part2 = myTicket.indexed()
+            .filter { departureFieldPositions.contains($0.index) }
+            .map(\.element)
+            .product()
         print(part2)
-
 
         // ------- Test -------
         assert(part1 == 20060, "WA")

@@ -59,3 +59,9 @@ extension Collection where Element: Hashable {
         return self.reduce(into: [:]) { $0[$1, default: 0] += 1 }
     }
 }
+
+extension Collection where Element: Collection {
+    subscript(column column: Element.Index) -> [Element.Element] {
+        return map { $0[column] }
+    }
+}
