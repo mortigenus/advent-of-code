@@ -1,6 +1,9 @@
 Solutions for [Advent of Code](https://adventofcode.com) in Swift.
 
-To run a solution from the command line you can use: `swift run advent-of-code <day> [<year>]`
+To run a solution from the command line you can do:
+```bash
+swift run -c release advent-of-code <day> [<year>]
+```
 
 ## 2018
 - [Day 1](Sources/advent-of-code/Solutions/2018/Solution_2018_01.swift)

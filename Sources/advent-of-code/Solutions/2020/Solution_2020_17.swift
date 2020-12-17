@@ -15,74 +15,89 @@ private enum Cube: String {
 }
 
 private struct Field1 {
-    var dimension = Self.emptyDimension
-    static var initXSize = 8
-    static var initYSize = 8
-    static var initZSize = 1
-    static var plannedCycles = 6
-    static var xSize = initXSize + 2 * plannedCycles
-    static var ySize = initYSize + 2 * plannedCycles
-    static var zSize = initZSize + 2 * plannedCycles
+    var dimension: [[[Cube]]]
+    var plannedCycles: Int
+    var initXSize: Int
+    var initYSize: Int
+    var initZSize = 1
+    var xSize: Int
+    var ySize: Int
+    var zSize: Int
 
-    init(string: String) {
-        string
+    init(string: String, plannedCycles: Int = 6) {
+        let cubes = string
             .split(whereSeparator: \.isNewline)
             .map(mapOptional(String.init >>> Cube.init(rawValue:)))
-            .indexed()
-            .forEach { y, row in
-                row.indexed().forEach { x, cube in
-                    update(x, y, 0, with: cube)
-                }
+        self.plannedCycles = plannedCycles
+        initYSize = cubes.count
+        initXSize = cubes[0].count
+        xSize = initXSize + 2 * plannedCycles
+        ySize = initYSize + 2 * plannedCycles
+        zSize = initZSize + 2 * plannedCycles
+        dimension = Self.empty(dimensions: (xSize, ySize, zSize))
+        cubes.indexed().forEach { y, row in
+            row.indexed().forEach { x, cube in
+                update(x, y, 0, with: cube)
             }
+        }
     }
 
     var activeCount: Int {
-        var active = 0
-        dimension.forEach { ys in ys.forEach { xs in xs.forEach { if $0 == .active { active += 1 } } } }
-        return active
+        var count = 0
+        dimension.forEach { $0.forEach { count += $0.filter { $0 == .active }.count } }
+        return count
     }
 
     mutating func update(_ x: Int, _ y: Int, _ z: Int, with cube: Cube) {
-        let x = (x + Self.plannedCycles) % Self.xSize
-        let y = (y + Self.plannedCycles) % Self.ySize
-        let z = (z + Self.plannedCycles) % Self.zSize
+        let (x, y, z) = convertCoordinates(x, y, z)
         dimension[z][y][x] = cube
     }
 
-    func cubeAt(_ x: Int, _ y: Int, _ z: Int) -> Cube? {
-        let x = (x + Self.plannedCycles) % Self.xSize
-        let y = (y + Self.plannedCycles) % Self.ySize
-        let z = (z + Self.plannedCycles) % Self.zSize
+    func cubeAt(_ x: Int, _ y: Int, _ z: Int) -> Cube {
+        let (x, y, z) = convertCoordinates(x, y, z)
         guard
             dimension.indices ~= z,
             dimension[z].indices ~= y,
             dimension[z][y].indices ~= x
         else {
-            return nil
+            return .inactive
         }
         return dimension[z][y][x]
     }
 
-    static var emptyDimension: [[[Cube]]] {
+    private static func empty(dimensions:(x: Int, y: Int, z: Int)) -> [[[Cube]]] {
         Array(
             repeating: Array(
                 repeating: Array(
                     repeating: Cube.inactive,
-                    count: xSize
+                    count: dimensions.x
                 ),
-                count: ySize
+                count: dimensions.y
             ),
-            count: zSize
+            count: dimensions.z
         )
     }
 
-    func adjacent(_ x: Int, _ y: Int, _ z: Int) -> [Cube] {
-        let curriedGet = curry(cubeAt)
-        let xGets = [curriedGet(x - 1), curriedGet(x), curriedGet(x + 1)]
-        let yGets = xGets.flatMap { [$0(y - 1), $0(y), $0(y + 1)] }
-        var zGets = yGets.flatMap { [$0(z - 1), $0(z), $0(z + 1)] }
-        zGets[13] = .inactive // inactive cubes do not interfere with rules, so it's fine
-        return zGets.compactMap(id)
+    func activeAdjacentCount(_ x: Int, _ y: Int, _ z: Int) -> Int {
+        let selfActive = cubeAt(x, y, z) == .active ? 1 : 0
+        let (x, y, z) = convertCoordinates(x, y, z)
+        let zR = (z - 1 ... z + 1).clamped(to: 0...zSize-1)
+        let yR = (y - 1 ... y + 1).clamped(to: 0...ySize-1)
+        let xR = (x - 1 ... x + 1).clamped(to: 0...xSize-1)
+        return dimension[zR]
+            .flatMap { $0[yR].flatMap { $0[xR] } }
+            .filter { $0 == .active }
+            .count - selfActive
+    }
+
+    private func convertCoordinates(
+        _ x: Int, _ y: Int, _ z: Int
+    ) -> (x: Int, y: Int, z: Int) {
+        (
+            x: (x + plannedCycles) % xSize,
+            y: (y + plannedCycles) % ySize,
+            z: (z + plannedCycles) % zSize
+        )
     }
 }
 
@@ -90,19 +105,18 @@ private struct Game1 {
     var field: Field1
 
     mutating func run() {
-        for x in 0..<Field1.plannedCycles {
+        for x in 0..<field.plannedCycles {
             cycle(number: x)
         }
     }
 
     mutating func cycle(number: Int) {
         var newField = field
-        for z in 0-number-1...Field1.initZSize+number {
-            for y in 0-number-1...Field1.initYSize+number {
-                for x in 0-number-1...Field1.initXSize+number {
-                    let near = field.adjacent(x, y, z)
-                    let me = field.cubeAt(x, y, z)!
-                    let activeCount = near.filter { $0 == .active }.count
+        for z in 0-number-1...field.initZSize+number {
+            for y in 0-number-1...field.initYSize+number {
+                for x in 0-number-1...field.initXSize+number {
+                    let activeCount = field.activeAdjacentCount(x, y, z)
+                    let me = field.cubeAt(x, y, z)
                     switch me {
                     case .active:
                         if activeCount != 2 && activeCount != 3 {
@@ -121,91 +135,98 @@ private struct Game1 {
 }
 
 private struct Field2 {
-    var dimension = Self.emptyDimension
-    static var initXSize = 8
-    static var initYSize = 8
-    static var initZSize = 1
-    static var initWSize = 1
-    static var plannedCycles = 6
-    static var xSize = initXSize + 2 * plannedCycles
-    static var ySize = initYSize + 2 * plannedCycles
-    static var zSize = initZSize + 2 * plannedCycles
-    static var wSize = initWSize + 2 * plannedCycles
+    var dimension: [[[[Cube]]]]
+    var initXSize: Int
+    var initYSize: Int
+    var initZSize = 1
+    var initWSize = 1
+    var plannedCycles: Int
+    var xSize: Int
+    var ySize: Int
+    var zSize: Int
+    var wSize: Int
 
-    init(string: String) {
-        string
+    init(string: String, plannedCycles: Int = 6) {
+        let cubes = string
             .split(whereSeparator: \.isNewline)
             .map(mapOptional(String.init >>> Cube.init(rawValue:)))
-            .indexed()
-            .forEach { y, row in
-                row.indexed().forEach { x, cube in
-                    update(x, y, 0, 0, with: cube)
-                }
+        self.plannedCycles = plannedCycles
+        initYSize = cubes.count
+        initXSize = cubes[0].count
+        xSize = initXSize + 2 * plannedCycles
+        ySize = initYSize + 2 * plannedCycles
+        zSize = initZSize + 2 * plannedCycles
+        wSize = initWSize + 2 * plannedCycles
+        dimension = Self.empty(dimensions: (xSize, ySize, zSize, wSize))
+        cubes.indexed().forEach { y, row in
+            row.indexed().forEach { x, cube in
+                update(x, y, 0, 0, with: cube)
             }
+        }
     }
 
     var activeCount: Int {
-        var active = 0
-        dimension.forEach {
-            zs in zs.forEach {
-                ys in ys.forEach {
-                    xs in xs.forEach {
-                        if $0 == .active { active += 1 }
-                    }
-                }
-            }
-        }
-        return active
+        var count = 0
+        dimension.forEach { $0.forEach { $0.forEach { count += $0.filter { $0 == .active }.count } } }
+        return count
     }
 
     mutating func update(_ x: Int, _ y: Int, _ z: Int, _ w: Int, with cube: Cube) {
-        let x = (x + Self.plannedCycles) % Self.xSize
-        let y = (y + Self.plannedCycles) % Self.ySize
-        let z = (z + Self.plannedCycles) % Self.zSize
-        let w = (w + Self.plannedCycles) % Self.wSize
+        let (x, y, z, w) = convertCoordinates(x, y, z, w)
         dimension[w][z][y][x] = cube
     }
 
-    func cubeAt(_ x: Int, _ y: Int, _ z: Int, _ w: Int) -> Cube? {
-        let x = (x + Self.plannedCycles) % Self.xSize
-        let y = (y + Self.plannedCycles) % Self.ySize
-        let z = (z + Self.plannedCycles) % Self.zSize
-        let w = (w + Self.plannedCycles) % Self.wSize
+    func cubeAt(_ x: Int, _ y: Int, _ z: Int, _ w: Int) -> Cube {
+        let (x, y, z, w) = convertCoordinates(x, y, z, w)
         guard
             dimension.indices ~= w,
             dimension[w].indices ~= z,
             dimension[w][z].indices ~= y,
             dimension[w][z][y].indices ~= x
         else {
-            return nil
+            return .inactive
         }
         return dimension[w][z][y][x]
     }
 
-    static var emptyDimension: [[[[Cube]]]] {
+    private static func empty(dimensions:(x: Int, y: Int, z: Int, w: Int)) -> [[[[Cube]]]] {
         Array(
             repeating: Array(
                 repeating: Array(
                     repeating: Array(
                         repeating: Cube.inactive,
-                        count: xSize
+                        count: dimensions.x
                     ),
-                    count: ySize
+                    count: dimensions.y
                 ),
-                count: zSize
+                count: dimensions.z
             ),
-            count: wSize
+            count: dimensions.w
         )
     }
 
-    func adjacent(_ x: Int, _ y: Int, _ z: Int, _ w: Int) -> [Cube] {
-        let curriedGet = curry(cubeAt)
-        let xGets = [curriedGet(x - 1), curriedGet(x), curriedGet(x + 1)]
-        let yGets = xGets.flatMap { [$0(y - 1), $0(y), $0(y + 1)] }
-        let zGets = yGets.flatMap { [$0(z - 1), $0(z), $0(z + 1)] }
-        var wGets = zGets.flatMap { [$0(w - 1), $0(w), $0(w + 1)] }
-        wGets[40] = .inactive // inactive cubes do not interfere with rules, so it's fine
-        return wGets.compactMap(id)
+    func activeAdjacentCount(_ x: Int, _ y: Int, _ z: Int, _ w: Int) -> Int {
+        let selfActive = cubeAt(x, y, z, w) == .active ? 1 : 0
+        let (x, y, z, w) = convertCoordinates(x, y, z, w)
+        let wR = (w - 1 ... w + 1).clamped(to: 0...wSize-1)
+        let zR = (z - 1 ... z + 1).clamped(to: 0...zSize-1)
+        let yR = (y - 1 ... y + 1).clamped(to: 0...ySize-1)
+        let xR = (x - 1 ... x + 1).clamped(to: 0...xSize-1)
+        return dimension[wR]
+            .flatMap { $0[zR].flatMap { $0[yR].flatMap { $0[xR] } } }
+            .filter { $0 == .active }
+            .count - selfActive
+    }
+
+    private func convertCoordinates(
+        _ x: Int, _ y: Int, _ z: Int, _ w: Int
+    ) -> (x: Int, y: Int, z: Int, w: Int) {
+        (
+            x: (x + plannedCycles) % xSize,
+            y: (y + plannedCycles) % ySize,
+            z: (z + plannedCycles) % zSize,
+            w: (w + plannedCycles) % wSize
+        )
     }
 }
 
@@ -213,20 +234,19 @@ private struct Game2 {
     var field: Field2
 
     mutating func run() {
-        for x in 0..<Field2.plannedCycles {
+        for x in 0..<field.plannedCycles {
             cycle(number: x)
         }
     }
 
     mutating func cycle(number: Int) {
         var newField = field
-        for w in 0-number-1...Field2.initWSize+number {
-            for z in 0-number-1...Field2.initZSize+number {
-                for y in 0-number-1...Field2.initYSize+number {
-                    for x in 0-number-1...Field2.initXSize+number {
-                        let near = field.adjacent(x, y, z, w)
-                        let me = field.cubeAt(x, y, z, w)!
-                        let activeCount = near.filter { $0 == .active }.count
+        for w in 0-number-1...field.initWSize+number {
+            for z in 0-number-1...field.initZSize+number {
+                for y in 0-number-1...field.initYSize+number {
+                    for x in 0-number-1...field.initXSize+number {
+                        let me = field.cubeAt(x, y, z, w)
+                        let activeCount = field.activeAdjacentCount(x, y, z, w)
                         switch me {
                         case .active:
                             if activeCount != 2 && activeCount != 3 {

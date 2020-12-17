@@ -2,12 +2,14 @@ import Foundation
 import ArgumentParser
 
 struct AdventOfCode: ParsableCommand {
-    @Argument(help: "For which day to run a solution")
+    @Argument(
+        help: "For which day to run a solution",
+        completion: .list((1...31).map(String.init)))
     var day: Int
 
     @Argument(
         help: "From which year to run a solution",
-        completion: .list(["2020, 2019, 2018"]))
+        completion: .list(["2020", "2019", "2018"]))
     var year: Int = currentYear()
 
     mutating func run() throws {
@@ -34,7 +36,7 @@ func run() {
 }
 
 func hardcodedRun() {
-    AdventOfCode.main(["15"])
+    AdventOfCode.main(["17"])
 }
 
 func runFromXcode() {
