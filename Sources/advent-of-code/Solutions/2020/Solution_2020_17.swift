@@ -43,9 +43,7 @@ private struct Field1 {
     }
 
     var activeCount: Int {
-        var count = 0
-        dimension.forEach { $0.forEach { count += $0.filter { $0 == .active }.count } }
-        return count
+        dimension.joined().joined().filter { $0 == .active }.count
     }
 
     mutating func update(_ x: Int, _ y: Int, _ z: Int, with cube: Cube) {
@@ -166,9 +164,7 @@ private struct Field2 {
     }
 
     var activeCount: Int {
-        var count = 0
-        dimension.forEach { $0.forEach { $0.forEach { count += $0.filter { $0 == .active }.count } } }
-        return count
+        dimension.joined().joined().joined().filter { $0 == .active }.count
     }
 
     mutating func update(_ x: Int, _ y: Int, _ z: Int, _ w: Int, with cube: Cube) {
