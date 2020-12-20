@@ -54,7 +54,7 @@ private struct Rules {
 }
 
 private typealias Ticket = [Int]
-extension Ticket {
+private extension Ticket {
     init(string: String) {
         self = string
             .split(separator: ",")

@@ -12,7 +12,7 @@ let package = Package(
             from: "0.3.1"),
         .package(
             url: "https://github.com/apple/swift-algorithms",
-            from: "0.0.2"),
+            .branch("main")),
         .package(
             name: "Prelude",
             url: "https://github.com/pointfreeco/swift-prelude.git",

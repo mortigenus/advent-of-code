@@ -7,8 +7,8 @@
 
 import Foundation
 
-private typealias Passport = [String:String]
-extension Passport {
+private typealias Passport = [String: String]
+private extension Passport {
     init(string: String) {
         self = Dictionary(
             uniqueKeysWithValues: string
@@ -18,7 +18,7 @@ extension Passport {
     }
 }
 
-extension Passport {
+private extension Passport {
     var requiredKeys: Set<String> {
         ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
     }

@@ -4,7 +4,7 @@ public class Intcode {
 
     public private(set) var program: [Int]
 
-    typealias Memory = [Int: Int]
+    private typealias Memory = [Int: Int]
     private var memory: Memory
 
     public init(program: [Int], input: [Int] = []) {

@@ -34,7 +34,7 @@ private enum Rule {
 }
 
 private typealias Rules = [Int: Rule]
-extension Rules {
+private extension Rules {
     init(string: String) {
         self = string.split(whereSeparator: \.isNewline)
             .reduce(into: [Int: Rule]()) { acc, x in
