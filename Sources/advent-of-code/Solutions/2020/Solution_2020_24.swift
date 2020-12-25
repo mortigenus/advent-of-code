@@ -21,7 +21,7 @@ private struct Point3: Hashable {
         self.z = z
     }
 
-    static func +(lhs: Point3, rhs: Point3) -> Point3{
+    static func + (lhs: Point3, rhs: Point3) -> Point3 {
         Point3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z)
     }
 

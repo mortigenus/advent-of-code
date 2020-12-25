@@ -93,6 +93,7 @@ struct SolutionRegistry {
             Solution_2020_22.self,
             Solution_2020_23.self,
             Solution_2020_24.self,
+            Solution_2020_25.self,
         ],
     ]
 

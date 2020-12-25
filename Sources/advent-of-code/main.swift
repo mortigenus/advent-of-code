@@ -36,7 +36,7 @@ func run() {
 }
 
 func hardcodedRun() {
-    AdventOfCode.main(["23"])
+    AdventOfCode.main(["25"])
 }
 
 func runFromXcode() {
