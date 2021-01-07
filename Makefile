@@ -3,7 +3,7 @@ all: build
 
 .PHONY: build
 build:
-	swift build -c release
+	swift build -c release -Xswiftc -cross-module-optimization
 	cp .build/release/advent-of-code /usr/local/bin/advent-of-code
 
 .PHONY: install-completions
