@@ -95,6 +95,9 @@ struct SolutionRegistry {
             Solution_2020_24.self,
             Solution_2020_25.self,
         ],
+        2021: [
+            Solution_2021_01.self,
+        ],
     ]
 
     static func solution(year: Int, day: Int, input: Input) throws -> Solution {

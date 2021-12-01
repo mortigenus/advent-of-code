@@ -5,6 +5,9 @@ To run a solution from the command line you can do:
 swift run -c release advent-of-code <day> [<year>]
 ```
 
+## 2021
+- [Day 1](Sources/advent-of-code/Solutions/2021/Solution_2021_01.swift)
+
 ## 2020
 - [Day 1](Sources/advent-of-code/Solutions/2020/Solution_2020_01.swift)
 - [Day 2](Sources/advent-of-code/Solutions/2020/Solution_2020_02.swift)

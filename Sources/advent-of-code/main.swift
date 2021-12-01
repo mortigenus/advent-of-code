@@ -9,7 +9,7 @@ struct AdventOfCode: ParsableCommand {
 
     @Argument(
         help: "From which year to run a solution",
-        completion: .list(["2020", "2019", "2018"]))
+        completion: .list(["2021", "2020", "2019", "2018"]))
     var year: Int = currentYear()
 
     mutating func run() throws {
