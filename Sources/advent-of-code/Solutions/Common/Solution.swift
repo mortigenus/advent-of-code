@@ -97,6 +97,7 @@ struct SolutionRegistry {
         ],
         2021: [
             Solution_2021_01.self,
+            Solution_2021_02.self,
         ],
     ]
 
