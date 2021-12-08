@@ -5,7 +5,7 @@ struct AdventOfCode: ParsableCommand {
     @Argument(
         help: "For which day to run a solution",
         completion: .list((1...31).map(String.init)))
-    var day: Int
+    var day: Int = currentDay()
 
     @Argument(
         help: "From which year to run a solution",
@@ -29,20 +29,25 @@ func run() {
 //    return
 //
     if isRunningFromXcode() {
-        runFromXcode()
+        hardcodedRun(today: true)
+//        runFromXcode()
     } else {
         AdventOfCode.main()
     }
 }
 
-func hardcodedRun() {
-    AdventOfCode.main(["25"])
+func hardcodedRun(today: Bool) {
+    if today {
+        AdventOfCode.main(["\(currentDay())", "\(currentYear())"])
+    } else {
+        AdventOfCode.main(["25"])
+    }
 }
 
 func runFromXcode() {
     let day: String?
     let year: String?
-    print("Day: ", terminator: "")
+    print("Day [\(currentDay())]: ", terminator: "")
     day = readLine()
     print("Year [\(currentYear())]: ", terminator: "")
     year = readLine()
@@ -52,6 +57,10 @@ func runFromXcode() {
 
 func isRunningFromXcode() -> Bool {
     ProcessInfo.processInfo.environment["OS_ACTIVITY_DT_MODE"] == "YES"
+}
+
+func currentDay() -> Int {
+    Calendar.current.component(.day, from: Date())
 }
 
 func currentYear() -> Int {
