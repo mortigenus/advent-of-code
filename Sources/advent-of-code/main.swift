@@ -36,7 +36,7 @@ func run() {
     }
 }
 
-func hardcodedRun(today: Bool) {
+func hardcodedRun(today: Bool = false) {
     if today {
         AdventOfCode.main(["\(currentDay())", "\(currentYear())"])
     } else {

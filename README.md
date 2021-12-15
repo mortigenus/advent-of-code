@@ -20,6 +20,7 @@ swift run -c release advent-of-code <day> [<year>]
 - [Day 12](Sources/advent-of-code/Solutions/2021/Solution_2021_12.swift)
 - [Day 13](Sources/advent-of-code/Solutions/2021/Solution_2021_13.swift)
 - [Day 14](Sources/advent-of-code/Solutions/2021/Solution_2021_14.swift)
+- [Day 15](Sources/advent-of-code/Solutions/2021/Solution_2021_15.swift)
 
 ## 2020
 - [Day 1](Sources/advent-of-code/Solutions/2020/Solution_2020_01.swift)
