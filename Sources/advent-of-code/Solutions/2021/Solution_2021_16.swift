@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import SortedCollections
 
 struct Solution_2021_16: Solution {
     var input: Input
@@ -59,7 +58,7 @@ struct Solution_2021_16: Solution {
         // ------- Part 2 -------
         func parse2(_ packet: ArraySlice<Int>, p: inout Int) -> Int {
             var result = 0
-            let version = packet[p..<(p+3)].fromBinary()
+            _ = packet[p..<(p+3)].fromBinary()
             p += 3
             let typeId = packet[p..<(p+3)].fromBinary()
             p += 3
