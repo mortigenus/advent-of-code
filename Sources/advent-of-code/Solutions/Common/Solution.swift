@@ -113,6 +113,7 @@ struct SolutionRegistry {
             Solution_2021_15.self,
             Solution_2021_16.self,
             Solution_2021_17.self,
+            Solution_2021_18.self,
         ],
     ]
 
